@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>FFS・LINE風会話ツクール Mobile v18</title>
+<title>FFS・LINE風会話ツクール Mobile v19</title>
 <style>
 :root{--bg:#eef1f5;--panel:#fff;--line:#dfe3e8;--accent:#06c755;--chat:#8cabd8;--text:#222;--muted:#777}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
@@ -23,7 +23,7 @@ h2{font-size:14px;margin:0 0 12px}.section{margin-bottom:22px}.person{display:fl
 .center{padding:18px;overflow:auto;display:flex;justify-content:center;align-items:flex-start}
 .phone{width:390px;height:760px;max-height:calc(100vh - 94px);background:#fff;border-radius:22px;box-shadow:0 8px 28px #0002;overflow:hidden;display:flex;flex-direction:column;border:1px solid #ccd2d8}
 .chathead{height:58px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border-bottom:1px solid #ddd;position:relative}.chathead .back{position:absolute;left:14px;font-size:22px}.chat{flex:1;background:var(--chat);padding:15px 11px;overflow-y:auto;overflow-x:hidden}
-.msgrow{display:flex;gap:7px;margin:10px 0;align-items:flex-start}.msgrow.me{justify-content:flex-end}.msgrow.selected .bubble{outline:3px solid #ffcf4a}
+.msgrow{display:flex;gap:7px;margin:10px 0;align-items:flex-start}.msgrow.me{justify-content:flex-end}.msgrow.selected .bubble{outline:none}
 .msgavatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#eee;display:grid;place-items:center;font-size:12px}.sender{font-size:9px;color:#334;margin:0 0 3px 2px}.bubble{max-width:245px;background:#fff;border-radius:15px;padding:9px 12px;line-height:1.4;font-size:16px;overflow-wrap:anywhere;word-break:break-word;box-shadow:0 1px 1px #0001;white-space:pre-wrap;cursor:pointer}.imageBubble{background:transparent!important;padding:0!important;box-shadow:none!important;border-radius:0!important;width:max-content!important;max-width:245px!important}
 .msgrow.me .imageBubble{margin-left:auto}
 .msgrow:not(.me) .imageBubble{margin-right:auto}
@@ -196,7 +196,7 @@ body{height:auto;min-height:100%;overflow:auto;background:#fff}
 </head>
 <body>
 <div class="top">
-<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v18</span></h1>
+<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v19</span></h1>
 <button onclick="openPeople()">👥 登場人物</button>
 <button onclick="addMessage()">＋ メッセージ</button>
 <button onclick="addImage()">＋ 画像</button>
@@ -293,7 +293,13 @@ function selectMsg(id){
  if(playing)return;
  selected=id;
  render();
- if(isMobile())openMobilePanel('editor');
+ if(window.innerWidth<=700){
+   const left=document.getElementById('leftPanel');
+   const right=document.getElementById('rightPanel');
+   left.classList.remove('mobileOpen');
+   right.classList.add('mobileOpen');
+   right.scrollTop=0;
+ }
 }
 function clearSelection(event){
  if(playing)return;
