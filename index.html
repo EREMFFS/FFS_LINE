@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>FFS・LINE風会話ツクール Mobile v15</title>
+<title>FFS・LINE風会話ツクール Mobile v16</title>
 <style>
 :root{--bg:#eef1f5;--panel:#fff;--line:#dfe3e8;--accent:#06c755;--chat:#8cabd8;--text:#222;--muted:#777}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
@@ -124,11 +124,74 @@ body{height:auto;min-height:100%;overflow:auto;background:#fff}
     padding-bottom:max(7px,env(safe-area-inset-bottom));
   }
 }
+
+@media(max-width:700px){
+  .top{
+    display:grid!important;
+    grid-template-columns:repeat(10,minmax(0,1fr));
+    grid-auto-rows:34px;
+    gap:4px;
+    overflow:hidden!important;
+    white-space:normal!important;
+    padding:calc(5px + env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 5px max(6px,env(safe-area-inset-left));
+  }
+  .top button{
+    width:100%!important;
+    min-width:0!important;
+    height:34px!important;
+    padding:0 2px!important;
+    font-size:0!important;
+    overflow:hidden;
+  }
+  .top button::after{
+    font-size:11px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+
+  /* Row 1: 5 controls, each spanning 2/10 columns */
+  .top button:nth-of-type(1){grid-column:span 2}
+  .top button:nth-of-type(2){grid-column:span 2}
+  .top button:nth-of-type(3){grid-column:span 2}
+  .top button:nth-of-type(4){grid-column:span 2}
+  .top button:nth-of-type(5){grid-column:span 2}
+
+  /* Row 2: 4 controls centered, each spanning 2/10 columns */
+  .top button:nth-of-type(6){grid-column:2 / span 2}
+  .top button:nth-of-type(7){grid-column:4 / span 2}
+  .top button:nth-of-type(8){grid-column:6 / span 2}
+  .top button:nth-of-type(9){grid-column:8 / span 2}
+
+  .top button:nth-of-type(1)::after{content:"👥 人物"}
+  .top button:nth-of-type(2)::after{content:"＋ 発言"}
+  .top button:nth-of-type(3)::after{content:"＋ 画像"}
+  .top button:nth-of-type(4)::after{content:"▶ 再生"}
+  .top button:nth-of-type(5)::after{content:"■ 編集"}
+  .top button:nth-of-type(6)::after{content:"保存"}
+  .top button:nth-of-type(7)::after{content:"読込"}
+  .top button:nth-of-type(8)::after{content:"☰ 会話"}
+  .top button:nth-of-type(9)::after{content:"✎ 編集"}
+
+  .phone{overflow:hidden!important;isolation:isolate}
+  .chathead{
+    position:relative!important;
+    z-index:100!important;
+    overflow:hidden!important;
+    background:#fff!important;
+  }
+  .chat{
+    position:relative!important;
+    z-index:1!important;
+    overflow-x:hidden!important;
+    clip-path:inset(0 0 0 0);
+  }
+}
+
 </style>
 </head>
 <body>
 <div class="top">
-<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v15</span></h1>
+<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v16</span></h1>
 <button onclick="openPeople()">👥 登場人物</button>
 <button onclick="addMessage()">＋ メッセージ</button>
 <button onclick="addImage()">＋ 画像</button>
