@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>FFS・LINE風会話ツクール Mobile v16</title>
+<title>FFS・LINE風会話ツクール Mobile v17</title>
 <style>
 :root{--bg:#eef1f5;--panel:#fff;--line:#dfe3e8;--accent:#06c755;--chat:#8cabd8;--text:#222;--muted:#777}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
@@ -23,8 +23,8 @@ h2{font-size:14px;margin:0 0 12px}.section{margin-bottom:22px}.person{display:fl
 .center{padding:18px;overflow:auto;display:flex;justify-content:center;align-items:flex-start}
 .phone{width:390px;height:760px;max-height:calc(100vh - 94px);background:#fff;border-radius:22px;box-shadow:0 8px 28px #0002;overflow:hidden;display:flex;flex-direction:column;border:1px solid #ccd2d8}
 .chathead{height:58px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border-bottom:1px solid #ddd;position:relative}.chathead .back{position:absolute;left:14px;font-size:22px}.chat{flex:1;background:var(--chat);padding:15px 11px;overflow-y:auto;overflow-x:hidden}
-.msgrow{display:flex;gap:7px;margin:10px 0;align-items:flex-start}.msgrow.me{justify-content:flex-end}.msgrow.selected .bubble{outline:3px solid #ffcf4a}
-.msgavatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#eee;display:grid;place-items:center;font-size:12px}.sender{font-size:9px;color:#334;margin:0 0 3px 2px}.bubble{max-width:245px;background:#fff;border-radius:15px;padding:9px 12px;line-height:1.34;font-size:13px;overflow-wrap:anywhere;word-break:break-word;box-shadow:0 1px 1px #0001;white-space:pre-wrap;cursor:pointer}.imageBubble{background:transparent!important;padding:0!important;box-shadow:none!important;border-radius:0!important;width:max-content!important;max-width:245px!important}
+.msgrow{display:flex;gap:7px;margin:10px 0;align-items:flex-start}.msgrow.me{justify-content:flex-end}.msgrow.selected .bubble{outline:none}
+.msgavatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#eee;display:grid;place-items:center;font-size:12px}.sender{font-size:9px;color:#334;margin:0 0 3px 2px}.bubble{max-width:245px;background:#fff;border-radius:15px;padding:9px 12px;line-height:1.4;font-size:16px;overflow-wrap:anywhere;word-break:break-word;box-shadow:0 1px 1px #0001;white-space:pre-wrap;cursor:pointer}.imageBubble{background:transparent!important;padding:0!important;box-shadow:none!important;border-radius:0!important;width:max-content!important;max-width:245px!important}
 .msgrow.me .imageBubble{margin-left:auto}
 .msgrow:not(.me) .imageBubble{margin-right:auto}
 .imageBubble img{vertical-align:top}
@@ -34,7 +34,7 @@ h2{font-size:14px;margin:0 0 12px}.section{margin-bottom:22px}.person{display:fl
 .imageWrapMe .imageBubble{align-self:flex-end}
 .imageWrapOther .imageBubble{align-self:flex-start}
 
-.me .bubble{background:#9bea6d}.meta{font-size:7px;color:#334;align-self:flex-end;margin:0 4px 3px;line-height:1.15;text-align:right;min-width:28px}.typing{font-size:12px;color:#445;background:#ffffffa8;padding:6px 10px;border-radius:12px;display:inline-block;margin:7px}
+.me .bubble{background:#82e85f}.meta{font-size:7px;color:#334;align-self:flex-end;margin:0 4px 3px;line-height:1.15;text-align:right;min-width:28px}.typing{font-size:12px;color:#445;background:#ffffffa8;padding:6px 10px;border-radius:12px;display:inline-block;margin:7px}
 .compose{height:52px;background:#fff;border-top:1px solid #ddd;display:flex;align-items:center;gap:7px;padding:7px}.compose input{flex:1;border:0;background:#f2f3f5;border-radius:18px;padding:9px 13px}.compose button{border:0;background:var(--accent);color:#fff;border-radius:50%;width:34px;height:34px}
 label{display:block;font-size:12px;color:#555;margin:11px 0 5px}.right input,.right select,.right textarea{width:100%;border:1px solid #ccd2d8;border-radius:8px;padding:8px}.right textarea{height:100px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.emojiBox{margin-top:8px;padding:8px;border:1px solid #d8dde3;border-radius:9px;background:#fafbfc}
 .emojiTitle{font-size:11px;color:#666;margin-bottom:5px}
@@ -191,7 +191,7 @@ body{height:auto;min-height:100%;overflow:auto;background:#fff}
 </head>
 <body>
 <div class="top">
-<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v16</span></h1>
+<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v17</span></h1>
 <button onclick="openPeople()">👥 登場人物</button>
 <button onclick="addMessage()">＋ メッセージ</button>
 <button onclick="addImage()">＋ 画像</button>
@@ -279,7 +279,7 @@ document.getElementById('chat').innerHTML=arr.map(m=>{
 let p=person(m.sender), me=p.self;
 let content=m.type==='image'?`<img src="${m.image}" style="width:${Math.min(245,245*Math.max(1,Math.min(200,m.imageScale||100))/100)}px;height:auto;max-height:440px;object-fit:contain;border-radius:9px;display:block">`:escapeHtml(m.text);
 return `<div class="msgrow ${me?'me':''} ${selected===m.id&&!playing?'selected':''}" data-id="${m.id}">
-${me?'':av(p,'msgavatar')}${me?`<div class="meta">既読 1<br>22:49</div>`:''}<div class="${m.type==='image'?(me?'imageWrap imageWrapMe':'imageWrap imageWrapOther'):''}">${me?'':`<div class="sender">${p.name}</div>`}<div class="bubble ${m.type==='image'?'imageBubble':''}" onclick="selectMsg('${m.id}')">${content}</div></div>${me?'':`<div class="meta">22:49</div>`}</div>`}).join('');
+${me?'':av(p,'msgavatar')}${me?`<div class="meta">既読 1</div>`:''}<div class="${m.type==='image'?(me?'imageWrap imageWrapMe':'imageWrap imageWrapOther'):''}">${me?'':`<div class="sender">${p.name}</div>`}<div class="bubble ${m.type==='image'?'imageBubble':''}" onclick="selectMsg('${m.id}')">${content}</div></div></div>`}).join('');
 if(!playing) renderEditor();
 let c=document.getElementById('chat'); c.scrollTop=c.scrollHeight;
 }
