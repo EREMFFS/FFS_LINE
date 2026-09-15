@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FFS・LINE風会話ツクール Mobile v13</title>
+<style>
+:root{--bg:#eef1f5;--panel:#fff;--line:#dfe3e8;--accent:#06c755;--chat:#8cabd8;--text:#222;--muted:#777}
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+button,input,select,textarea{font:inherit} button{cursor:pointer}
+.top{height:58px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:10px}
+.top h1{font-size:17px;margin:0 18px 0 0}.top button{border:1px solid #ccd2d8;background:#fff;border-radius:8px;padding:8px 12px}.top .play{background:var(--accent);color:#fff;border-color:var(--accent)}
+.app{display:grid;grid-template-columns:250px minmax(390px,1fr) 330px;height:calc(100vh - 58px)}
+.left,.right{background:#fff;overflow:auto}.left{border-right:1px solid var(--line);padding:16px}.right{border-left:1px solid var(--line);padding:16px}
+h2{font-size:14px;margin:0 0 12px}.section{margin-bottom:22px}.person{display:flex;align-items:center;gap:9px;padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;background:#fff}.avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#ddd;display:grid;place-items:center;font-weight:700}.person small{display:block;color:var(--muted)}.add{width:100%;border:1px dashed #aaa;background:#fafafa;border-radius:9px;padding:9px}
+.eventCard{position:relative;padding:6px 30px 6px 6px!important;gap:6px!important;cursor:pointer}
+.eventCard.selectedEvent{background:#eaf4ff;border-color:#82b8e8;box-shadow:inset 3px 0 0 #4c9be8}
+.eventMove{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1px}
+.eventMove button{width:22px;height:18px;padding:0;border:1px solid #cbd2d8;background:#fff;border-radius:4px;font-size:10px;line-height:15px}
+.eventMove button:disabled{opacity:.25}
+.eventActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+
+.center{padding:18px;overflow:auto;display:flex;justify-content:center;align-items:flex-start}
+.phone{width:390px;height:760px;max-height:calc(100vh - 94px);background:#fff;border-radius:22px;box-shadow:0 8px 28px #0002;overflow:hidden;display:flex;flex-direction:column;border:1px solid #ccd2d8}
+.chathead{height:58px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border-bottom:1px solid #ddd;position:relative}.chathead .back{position:absolute;left:14px;font-size:22px}.chat{flex:1;background:var(--chat);padding:15px 11px;overflow-y:auto;overflow-x:hidden}
+.msgrow{display:flex;gap:7px;margin:10px 0;align-items:flex-start}.msgrow.me{justify-content:flex-end}.msgrow.selected .bubble{outline:3px solid #ffcf4a}
+.msgavatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#eee;display:grid;place-items:center;font-size:12px}.sender{font-size:9px;color:#334;margin:0 0 3px 2px}.bubble{max-width:245px;background:#fff;border-radius:15px;padding:9px 12px;line-height:1.34;font-size:13px;overflow-wrap:anywhere;word-break:break-word;box-shadow:0 1px 1px #0001;white-space:pre-wrap;cursor:pointer}.imageBubble{background:transparent!important;padding:0!important;box-shadow:none!important;border-radius:0!important;width:max-content!important;max-width:245px!important}
+.msgrow.me .imageBubble{margin-left:auto}
+.msgrow:not(.me) .imageBubble{margin-right:auto}
+.imageBubble img{vertical-align:top}
+.imageWrap{display:flex;flex-direction:column;max-width:245px}
+.imageWrapMe{align-items:flex-end}
+.imageWrapOther{align-items:flex-start}
+.imageWrapMe .imageBubble{align-self:flex-end}
+.imageWrapOther .imageBubble{align-self:flex-start}
+
+.me .bubble{background:#9bea6d}.meta{font-size:7px;color:#334;align-self:flex-end;margin:0 4px 3px;line-height:1.15;text-align:right;min-width:28px}.typing{font-size:12px;color:#445;background:#ffffffa8;padding:6px 10px;border-radius:12px;display:inline-block;margin:7px}
+.compose{height:52px;background:#fff;border-top:1px solid #ddd;display:flex;align-items:center;gap:7px;padding:7px}.compose input{flex:1;border:0;background:#f2f3f5;border-radius:18px;padding:9px 13px}.compose button{border:0;background:var(--accent);color:#fff;border-radius:50%;width:34px;height:34px}
+label{display:block;font-size:12px;color:#555;margin:11px 0 5px}.right input,.right select,.right textarea{width:100%;border:1px solid #ccd2d8;border-radius:8px;padding:8px}.right textarea{height:100px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.emojiBox{margin-top:8px;padding:8px;border:1px solid #d8dde3;border-radius:9px;background:#fafbfc}
+.emojiTitle{font-size:11px;color:#666;margin-bottom:5px}
+.emojiPalette{display:flex;flex-wrap:wrap;gap:3px}
+.emojiPalette button{width:30px;height:30px;border:1px solid transparent;background:transparent;border-radius:6px;padding:0;font-size:18px;line-height:28px}
+.emojiPalette button:hover{background:#eef2f5;border-color:#d8dde3}
+.danger{margin-top:14px;width:100%;border:1px solid #e4a3a3;background:#fff5f5;border-radius:8px;padding:8px;color:#a33}.hint{font-size:11px;color:#777;line-height:1.5}.badge{font-size:10px;padding:2px 6px;background:#edf0f2;border-radius:9px}
+.overlay{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:center;justify-content:center}.modal{background:#fff;width:520px;max-height:80vh;overflow:auto;border-radius:14px;padding:20px}.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead button{border:0;background:none;font-size:22px}
+.pedit{display:grid;grid-template-columns:48px 1fr 90px;gap:8px;align-items:center;margin:10px 0}.pedit input{width:100%;padding:8px;border:1px solid #ccc;border-radius:7px}
+
+.mobileOnly{display:none}
+@media(max-width:700px){
+body{height:auto;min-height:100%;overflow:auto;background:#fff}
+.top{height:auto;min-height:54px;padding:6px 8px;gap:5px;overflow-x:auto;white-space:nowrap;position:sticky;top:0;z-index:30}
+.top h1{display:none}
+.top button{padding:7px 9px;font-size:12px;flex:0 0 auto}
+.top .mobileOnly{display:inline-block}
+.app{display:block;height:auto}
+.center{padding:0;display:block;overflow:visible;background:#fff}
+.phone{width:100%;height:auto;min-height:calc(100vh - 60px);max-height:none;border:0;border-radius:0;box-shadow:none}
+.chathead{height:48px;position:sticky;top:54px;z-index:4}
+.chat{min-height:calc(100vh - 160px);padding:12px 10px}
+.compose{height:54px;position:sticky;bottom:0;z-index:4}
+.left,.right{display:none;position:fixed;z-index:50;inset:0;background:#fff;border:0;padding:14px 14px 30px;overflow-y:auto}
+.left.mobileOpen,.right.mobileOpen{display:block}
+.mobileClose{display:block!important;position:sticky;top:0;z-index:3;margin-left:auto;margin-bottom:10px;border:1px solid #ccd2d8;background:#fff;border-radius:8px;padding:8px 12px}
+.bubble{max-width:72vw}
+.imageWrap,.imageBubble{max-width:72vw!important}
+.msgrow{margin:9px 0}
+.msgavatar{width:32px;height:32px}
+.meta{min-width:27px}
+.overlay{align-items:flex-end}
+.modal{width:100%;max-height:88vh;border-radius:16px 16px 0 0;padding:16px}
+.pedit{grid-template-columns:44px 1fr 72px}
+}
+@media(min-width:701px) and (max-width:900px){.app{grid-template-columns:190px 1fr}.right{display:none}.phone{width:380px}.left{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="top">
+<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v13</span></h1>
+<button onclick="openPeople()">👥 登場人物</button>
+<button onclick="addMessage()">＋ メッセージ</button>
+<button onclick="addImage()">＋ 画像</button>
+<button class="play" onclick="playAll()">▶ 最初から再生</button>
+<button onclick="stopPlay()">■ 停止 / 編集</button>
+<button onclick="saveProject()">保存</button>
+<button onclick="loadProject()">読込</button>
+<button class="mobileOnly" onclick="openMobilePanel('events')">☰ 会話</button>
+<button class="mobileOnly" onclick="openMobilePanel('editor')">✎ 編集</button>
+<input id="fileLoad" type="file" accept=".json" hidden>
+<input id="imageLoad" type="file" accept="image/*" hidden>
+</div>
+
+<div class="app">
+<aside class="left" id="leftPanel"><button class="mobileOnly mobileClose" onclick="closeMobilePanels()">× 閉じる</button>
+<div class="section"><h2>トーク設定</h2>
+<label>トーク名</label><input id="talkName" value="トーク" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px" oninput="render()">
+</div>
+<div class="section"><h2>登場人物</h2><div id="peopleList"></div><button class="add" onclick="openPeople()">＋ 登場人物を管理</button></div>
+<div class="section"><h2>会話イベント</h2><div class="eventActions"><button class="add" onclick="addMessage()">＋ 発言を追加</button><button class="add" onclick="insertMessage()">＋ 発言を挿入</button></div><div id="eventList"></div></div>
+<p class="hint">編集時は完成した会話を全部表示。吹き出しをクリックすると右側で内容・送信者・間隔などを変更できます。</p>
+</aside>
+
+<main class="center">
+<div class="phone">
+<div class="chathead"><span class="back">‹</span><span id="headName"></span></div>
+<div id="chat" class="chat"></div>
+<div class="compose"><span>＋</span><input placeholder="メッセージを入力" disabled><button>➤</button></div>
+</div>
+</main>
+
+<aside class="right" id="rightPanel"><button class="mobileOnly mobileClose" onclick="closeMobilePanels()">× 閉じる</button>
+<h2>選択中のメッセージ</h2>
+<div id="editor"><p class="hint">会話の吹き出しをクリックして編集します。</p></div>
+</aside>
+</div>
+
+<div id="overlay" class="overlay">
+<div class="modal">
+<div class="modalhead"><h2 style="font-size:18px">登場人物管理</h2><button onclick="closePeople()">×</button></div>
+<p class="hint">「自分」は1人固定で削除できません。自分の発言は右側、追加した登場人物は左側に表示されます。</p>
+<div id="peopleEditor"></div>
+<button class="add" onclick="addPerson()">＋ 登場人物を追加</button>
+</div>
+</div>
+
+<script>
+let people=[
+{id:'me',name:'あなた',self:true,color:'#f3c84b',image:null},
+{id:'p1',name:'知り合いＡ',self:false,color:'#85c4ff',image:null}
+];
+let messages=[
+{id:crypto.randomUUID(),sender:'me',type:'text',text:'こんにちは',delay:0.8,read:0.6,typing:0},
+{id:crypto.randomUUID(),sender:'p1',type:'text',text:'はい、こんにちは',delay:1.0,read:0.5,typing:0.7}
+];
+let selected=messages[0].id, playing=false, timers=[], composing=false;
+
+
+function isMobile(){return window.matchMedia('(max-width:700px)').matches}
+function openMobilePanel(which){
+document.getElementById('leftPanel').classList.toggle('mobileOpen',which==='events');
+document.getElementById('rightPanel').classList.toggle('mobileOpen',which==='editor');
+}
+function closeMobilePanels(){
+document.getElementById('leftPanel').classList.remove('mobileOpen');
+document.getElementById('rightPanel').classList.remove('mobileOpen');
+}
+function person(id){return people.find(p=>p.id===id)||people[0]}
+function av(p,cls='avatar'){return p.image?`<img class="${cls}" src="${p.image}">`:`<div class="${cls}" style="background:${p.color}">${p.name.slice(0,1)}</div>`}
+
+function render(limit=null){
+document.getElementById('headName').textContent=document.getElementById('talkName').value;
+document.getElementById('peopleList').innerHTML=people.map(p=>`<div class="person">${av(p)}<div><b>${p.name}</b><small>${p.self?'自分・右側':'相手・左側'}</small></div></div>`).join('');
+document.getElementById('eventList').innerHTML=messages.map((m,i)=>{
+let p=person(m.sender);
+return `<div class="person eventCard ${selected===m.id&&!playing?'selectedEvent':''}" onclick="selectMsg('${m.id}')">
+${av(p,'msgavatar')}
+<div style="min-width:0;flex:1"><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.type==='image'?'🖼 画像':escapeHtml(m.text)}</small></div>
+<div class="eventMove">
+<button type="button" title="上へ" onclick="event.stopPropagation();moveMsg(${i},-1)" ${i===0?'disabled':''}>▲</button>
+<button type="button" title="下へ" onclick="event.stopPropagation();moveMsg(${i},1)" ${i===messages.length-1?'disabled':''}>▼</button>
+</div></div>`}).join('');
+let arr=limit===null?messages:messages.slice(0,limit);
+document.getElementById('chat').innerHTML=arr.map(m=>{
+let p=person(m.sender), me=p.self;
+let content=m.type==='image'?`<img src="${m.image}" style="width:${Math.min(245,245*Math.max(1,Math.min(200,m.imageScale||100))/100)}px;height:auto;max-height:440px;object-fit:contain;border-radius:9px;display:block">`:escapeHtml(m.text);
+return `<div class="msgrow ${me?'me':''} ${selected===m.id&&!playing?'selected':''}" data-id="${m.id}">
+${me?'':av(p,'msgavatar')}${me?`<div class="meta">既読 1<br>22:49</div>`:''}<div class="${m.type==='image'?(me?'imageWrap imageWrapMe':'imageWrap imageWrapOther'):''}">${me?'':`<div class="sender">${p.name}</div>`}<div class="bubble ${m.type==='image'?'imageBubble':''}" onclick="selectMsg('${m.id}')">${content}</div></div>${me?'':`<div class="meta">22:49</div>`}</div>`}).join('');
+if(!playing) renderEditor();
+let c=document.getElementById('chat'); c.scrollTop=c.scrollHeight;
+}
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function selectMsg(id){if(playing)return;selected=id;render();if(isMobile()&&document.getElementById('leftPanel').classList.contains('mobileOpen'))openMobilePanel('editor')}
+function renderEditor(){
+let m=messages.find(x=>x.id===selected);let e=document.getElementById('editor');
+if(!m){e.innerHTML='<p class="hint">メッセージを選択してください。</p>';return}
+let imageControls = m.type==='image' ? `
+<label>画像サイズ <b id="scaleLabel">${m.imageScale||100}%</b></label>
+<div style="display:grid;grid-template-columns:1fr 72px;gap:8px;align-items:center">
+<input id="scaleRange" type="range" min="1" max="200" step="1" value="${m.imageScale||100}" oninput="setImageScale(this.value)">
+<input id="scaleNumber" type="number" min="1" max="200" step="1" value="${m.imageScale||100}" oninput="setImageScale(this.value)">
+</div>
+<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
+${[25,50,75,100,150,200].map(v=>`<button type="button" onclick="setImageScale(${v})" style="padding:5px 8px;border:1px solid #ccd2d8;background:#fff;border-radius:7px">${v}%</button>`).join('')}
+</div>` : '';
+e.innerHTML=`<label>送信者</label><select onchange="upd('sender',this.value)">${people.map(p=>`<option value="${p.id}" ${p.id===m.sender?'selected':''}>${p.self?'自分：':''}${p.name}</option>`).join('')}</select>
+<label>種類</label><select onchange="upd('type',this.value)"><option value="text" ${m.type==='text'?'selected':''}>テキスト</option><option value="image" ${m.type==='image'?'selected':''}>画像</option></select>
+${m.type==='text'?`<label>台詞</label><textarea id="messageText" oninput="updTextIME(this)">${m.text||''}</textarea>
+<div class="emojiBox">
+<div class="emojiTitle">絵文字</div>
+<div class="emojiPalette">
+${['💖','💔','💕','💘','💗','💢','💣','💤','💦','💩','💪','💯','😁','😂','😃','😊','😅','😇','😏','😜','😍','😎','🤣','😌','😛','😝','😠','😡','😭','😥','😤'].map(x=>`<button type="button" title="${x}" onmousedown="event.preventDefault()" onclick="insertEmoji('${x}')">${x}</button>`).join('')}
+</div></div>`:`<p class="hint">画像メッセージ。サイズを下で調整できます。</p>${imageControls}`}
+<div class="row"><div><label>前からの間隔（秒）</label><input type="number" min="0" step=".1" value="${m.delay}" onchange="upd('delay',+this.value)"></div><div><label>既読まで（秒）</label><input type="number" min="0" step=".1" value="${m.read}" onchange="upd('read',+this.value)"></div></div>
+<label>入力中表示（秒）</label><input type="number" min="0" step=".1" value="${m.typing}" onchange="upd('typing',+this.value)">
+<button class="danger" onclick="deleteMsg()">このメッセージを削除</button>`;
+}
+function insertEmoji(emoji){
+let ta=document.getElementById('messageText');
+let m=messages.find(x=>x.id===selected);
+if(!ta||!m)return;
+let start=typeof ta.selectionStart==='number'?ta.selectionStart:ta.value.length;
+let end=typeof ta.selectionEnd==='number'?ta.selectionEnd:start;
+ta.value=ta.value.slice(0,start)+emoji+ta.value.slice(end);
+let pos=start+emoji.length;
+ta.focus();ta.setSelectionRange(pos,pos);
+m.text=ta.value;
+let b=document.querySelector('.msgrow[data-id="'+selected+'"] .bubble');
+if(b)b.textContent=ta.value;
+let ev=[...document.querySelectorAll('.eventCard')].find(x=>x.getAttribute('onclick')?.includes(selected));
+if(ev){let sm=ev.querySelector('small');if(sm)sm.textContent=ta.value}
+}
+function updTextIME(el){
+let m=messages.find(x=>x.id===selected);if(!m)return;
+m.text=el.value;
+let b=document.querySelector('.msgrow[data-id="'+selected+'"] .bubble');
+if(b)b.textContent=el.value;
+}
+function setImageScale(v){
+let n=Math.max(1,Math.min(200,Number(v)||1));
+let m=messages.find(x=>x.id===selected);if(!m)return;
+m.imageScale=n;
+let r=document.getElementById('scaleRange'),q=document.getElementById('scaleNumber'),l=document.getElementById('scaleLabel');
+if(r)r.value=n;if(q)q.value=n;if(l)l.textContent=n+'%';
+let row=document.querySelector('.msgrow[data-id="'+selected+'"] img');
+if(row)row.style.width=Math.min(245,245*n/100)+'px';
+}
+function upd(k,v){let m=messages.find(x=>x.id===selected);if(m){m[k]=v;render()}}
+function updText(v){let m=messages.find(x=>x.id===selected);if(!m)return;m.text=v;renderPreviewOnly()}
+function renderPreviewOnly(){
+ document.getElementById('headName').textContent=document.getElementById('talkName').value;
+ document.getElementById('eventList').innerHTML=messages.map((m,i)=>`<div class="person" onclick="selectMsg('${m.id}')" style="cursor:pointer"><div class="avatar" style="width:27px;height:27px;font-size:10px;background:${person(m.sender).color}">${i+1}</div><div style="min-width:0"><b>${person(m.sender).name}</b><small style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px">${m.type==='image'?'🖼 画像':escapeHtml(m.text)}</small></div></div>`).join('');
+ let c=document.getElementById('chat');
+ let row=c.querySelector(`[data-id="${selected}"] .bubble`);
+ if(row){let m=messages.find(x=>x.id===selected); if(m&&m.type==='text') row.textContent=m.text;}
+}
+function insertMessage(){
+let idx=messages.findIndex(x=>x.id===selected);
+let m={id:crypto.randomUUID(),sender:'me',type:'text',text:'新しいメッセージ',delay:1,read:.5,typing:0};
+if(idx<0) messages.push(m); else messages.splice(idx,0,m);
+selected=m.id;render();
+}
+function addMessage(){let m={id:crypto.randomUUID(),sender:'me',type:'text',text:'新しいメッセージ',delay:1,read:.5,typing:0};messages.push(m);selected=m.id;render()}
+function moveMsg(i,dir){
+let j=i+dir;if(j<0||j>=messages.length)return;
+[messages[i],messages[j]]=[messages[j],messages[i]];
+selected=messages[j].id;
+render();
+}
+function deleteMsg(){messages=messages.filter(x=>x.id!==selected);selected=messages.at(-1)?.id||null;render()}
+function addImage(){document.getElementById('imageLoad').click()}
+document.getElementById('imageLoad').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let m={id:crypto.randomUUID(),sender:'me',type:'image',image:r.result,text:'',delay:1,read:.5,typing:0,imageScale:100};messages.push(m);selected=m.id;render()};r.readAsDataURL(f);e.target.value=''}
+
+function openPeople(){renderPeopleEditor();document.getElementById('overlay').style.display='flex'}
+function closePeople(){document.getElementById('overlay').style.display='none';render()}
+function renderPeopleEditor(){document.getElementById('peopleEditor').innerHTML=people.map((p,i)=>`<div class="pedit">${av(p)}<input value="${p.name}" oninput="renamePerson('${p.id}',this.value)"><div>${p.self?'<span class="badge">自分</span>':`<button onclick="removePerson('${p.id}')">削除</button>`}</div></div><div style="margin:-5px 0 8px 56px"><button onclick="pickAvatar('${p.id}')">アイコン画像を選択</button><input id="av_${p.id}" type="file" accept="image/*" hidden onchange="avatarLoaded('${p.id}',this)"></div>`).join('')}
+function addPerson(){people.push({id:'p'+Date.now(),name:'新しい人物',self:false,color:'#ddd',image:null});renderPeopleEditor()}
+function renamePerson(id,n){person(id).name=n;render()}
+function removePerson(id){if(messages.some(m=>m.sender===id)){alert('この人物の発言があるため削除できません。');return}people=people.filter(p=>p.id!==id);renderPeopleEditor()}
+function pickAvatar(id){document.getElementById('av_'+id).click()}
+function avatarLoaded(id,input){let f=input.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{person(id).image=r.result;renderPeopleEditor();render()};r.readAsDataURL(f)}
+
+function stopPlay(){playing=false;timers.forEach(clearTimeout);timers=[];render()}
+async function playAll(){
+closeMobilePanels();stopPlay();playing=true;selected=null;document.getElementById('chat').innerHTML='';
+for(let i=0;i<messages.length&&playing;i++){
+let m=messages[i],p=person(m.sender);
+await wait(m.delay*1000);if(!playing)break;
+if(m.typing>0&&!p.self){let c=document.getElementById('chat');let t=document.createElement('div');t.className='typing';t.id='typing';t.textContent=p.name+' が入力中…';c.appendChild(t);c.scrollTop=c.scrollHeight;await wait(m.typing*1000);t.remove()}
+if(!playing)break;render(i+1);playing=true;
+}
+if(playing){playing=false;render()}
+}
+function wait(ms){return new Promise(res=>{let t=setTimeout(res,ms);timers.push(t)})}
+
+function saveProject(){
+let data={talkName:document.getElementById('talkName').value,people,messages};
+let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ffs_line_talk.json';a.click();URL.revokeObjectURL(a.href)
+}
+function loadProject(){document.getElementById('fileLoad').click()}
+document.getElementById('fileLoad').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);people=d.people;messages=d.messages;messages.forEach(m=>{if(m.type==='image'&&!m.imageScale)m.imageScale=100});document.getElementById('talkName').value=d.talkName||'トーク';selected=messages[0]?.id||null;render()}catch{alert('読み込みに失敗しました')}};r.readAsText(f)}
+render();
+</script>
+</body>
+</html>
