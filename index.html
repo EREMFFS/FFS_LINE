@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>FFS・LINE風会話ツクール Mobile v17</title>
+<title>FFS・LINE風会話ツクール Mobile v18</title>
 <style>
 :root{--bg:#eef1f5;--panel:#fff;--line:#dfe3e8;--accent:#06c755;--chat:#8cabd8;--text:#222;--muted:#777}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
@@ -187,11 +187,16 @@ body{height:auto;min-height:100%;overflow:auto;background:#fff}
   }
 }
 
+
+@media(max-width:700px){
+  .top button.mobileOnly[onclick*="openMobilePanel('editor')"]{display:none!important}
+}
+
 </style>
 </head>
 <body>
 <div class="top">
-<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v17</span></h1>
+<h1>FFS・LINE風会話ツクール <span class="badge">Mobile v18</span></h1>
 <button onclick="openPeople()">👥 登場人物</button>
 <button onclick="addMessage()">＋ メッセージ</button>
 <button onclick="addImage()">＋ 画像</button>
@@ -284,7 +289,12 @@ if(!playing) renderEditor();
 let c=document.getElementById('chat'); c.scrollTop=c.scrollHeight;
 }
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function selectMsg(id){if(playing)return;selected=id;render();if(isMobile()&&document.getElementById('leftPanel').classList.contains('mobileOpen'))openMobilePanel('editor')}
+function selectMsg(id){
+ if(playing)return;
+ selected=id;
+ render();
+ if(isMobile())openMobilePanel('editor');
+}
 function clearSelection(event){
  if(playing)return;
  if(event.target.closest('.bubble'))return;
